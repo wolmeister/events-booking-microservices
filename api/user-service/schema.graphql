@@ -1,0 +1,9 @@
+type User @key(fields: "walletId") {
+  id: ID
+  username: String
+  walletId: String
+}
+
+type Query {
+  user(id: ID): User
+}
