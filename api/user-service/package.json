@@ -7,7 +7,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rimraf dist && tsc --build",
+    "build": "rimraf dist && tsc && copyfiles --up 1 src/*.graphql dist/",
     "dev": "ts-node-dev --respawn --transpile-only --clear -r dotenv/config src/index.ts",
     "gen": "graphql-codegen"
   },
@@ -20,6 +20,7 @@
     "@graphql-codegen/typescript": "^2.3.0",
     "@graphql-codegen/typescript-resolvers": "^2.4.0",
     "@types/node": "^16.11.6",
+    "copyfiles": "^2.4.1",
     "dotenv": "^10.0.0",
     "graphql": "^15.7.2",
     "rimraf": "^3.0.2",

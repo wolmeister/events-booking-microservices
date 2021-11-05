@@ -1,4 +1,4 @@
-import { Resolvers } from './resolvers-types';
+import { Resolvers } from '@generated/resolvers-types';
 
 export const users = [
   {
