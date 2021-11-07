@@ -5,18 +5,23 @@ specifiers:
   '@graphql-codegen/cli': ^2.2.2
   '@graphql-codegen/typescript': ^2.3.0
   '@graphql-codegen/typescript-resolvers': ^2.4.0
+  '@prisma/client': ^3.4.1
   '@types/node': ^16.11.6
   apollo-server: ^3.4.0
   copyfiles: ^2.4.1
   dotenv: ^10.0.0
   graphql: ^15.7.2
+  graphql-scalars: ^1.13.1
+  prisma: ^3.4.1
   rimraf: ^3.0.2
   ts-node-dev: ^1.1.8
   typescript: ^4.4.4
 
 dependencies:
   '@apollo/federation': 0.33.3_graphql@15.7.2
+  '@prisma/client': 3.4.1_prisma@3.4.1
   apollo-server: 3.4.0_graphql@15.7.2
+  graphql-scalars: 1.13.1_graphql@15.7.2
 
 devDependencies:
   '@graphql-codegen/cli': 2.2.2_63e8f647b2791d6b5cbc01c63ce66aee
@@ -26,6 +31,7 @@ devDependencies:
   copyfiles: 2.4.1
   dotenv: 10.0.0
   graphql: 15.7.2
+  prisma: 3.4.1
   rimraf: 3.0.2
   ts-node-dev: 1.1.8_typescript@4.4.4
   typescript: 4.4.4
@@ -1130,6 +1136,29 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.13.0
+    dev: true
+
+  /@prisma/client/3.4.1_prisma@3.4.1:
+    resolution: {integrity: sha512-tUlPSyGiZfmt9xTtvZK8d8cqu76QLCM+rFt7+ezpau/G0VwzetuGVmT28c61Eaw7OW2KmsTHRk8LUxI7HZS3kA==}
+    engines: {node: '>=12.6'}
+    requiresBuild: true
+    peerDependencies:
+      prisma: '*'
+    peerDependenciesMeta:
+      prisma:
+        optional: true
+    dependencies:
+      '@prisma/engines-version': 3.4.1-2.57771c0558568c7d08bd34c7248af5244ae16bd9
+      prisma: 3.4.1
+    dev: false
+
+  /@prisma/engines-version/3.4.1-2.57771c0558568c7d08bd34c7248af5244ae16bd9:
+    resolution: {integrity: sha512-H8bnBT5jLap+0nULBAGjf+xb5XNn4d60U4J9cck+UanyEkeMS3aYCeHvNiQl46XwvN60jkUX8BwV3NOEmPh0SQ==}
+    dev: false
+
+  /@prisma/engines/3.4.1-2.57771c0558568c7d08bd34c7248af5244ae16bd9:
+    resolution: {integrity: sha512-NO4Q88k3CfUpYzfpDD+0wSVCqhaeljCFAGSe1XyvmXAOlMU2AAjCwmRn6S4UXlT9yEGB/LwFjdvGjcgfUQ+Mtw==}
+    requiresBuild: true
     dev: true
 
   /@protobufjs/aspromise/1.1.2:
@@ -2521,6 +2550,16 @@ packages:
       graphql: 15.7.2
     dev: true
 
+  /graphql-scalars/1.13.1_graphql@15.7.2:
+    resolution: {integrity: sha512-FGMQqY+X/AQ+WV77eSNspZqU9q/Q4mIZMeo8xsLWGgbOpIHlxWuWq3fVzbgo2XKOC+wXT1CJupY1PGU2PtzFCg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+    dependencies:
+      graphql: 15.7.2
+      tslib: 2.3.1
+    dev: false
+
   /graphql-sse/1.0.4_graphql@15.7.2:
     resolution: {integrity: sha512-oB43ifRcEdElgep9jTP9qsj5cJ7Ny/1tAFyIl1W3A0hXRRg/P71tUHzMFBrRkEsJ9IA7MTp+RKSJfh52QR6PBQ==}
     engines: {node: '>=12'}
@@ -3499,6 +3538,15 @@ packages:
   /prepend-http/2.0.0:
     resolution: {integrity: sha1-6SQ0v6XqjBn0HN/UAddBo8gZ2Jc=}
     engines: {node: '>=4'}
+    dev: true
+
+  /prisma/3.4.1:
+    resolution: {integrity: sha512-APws/xRa1wYd064KV7hByQzWiBMUy/yQ501XXrsRZegXAQ/j1obG2HCk34MEbgn8IqLSRLaXyhCYz4R4HwRmMQ==}
+    engines: {node: '>=12.6'}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      '@prisma/engines': 3.4.1-2.57771c0558568c7d08bd34c7248af5244ae16bd9
     dev: true
 
   /process-nextick-args/2.0.1:

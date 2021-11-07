@@ -9,11 +9,14 @@
   "scripts": {
     "build": "rimraf dist && tsc && copyfiles --up 1 src/*.graphql dist/",
     "dev": "ts-node-dev --respawn --transpile-only --clear -r dotenv/config src/index.ts",
-    "gen": "graphql-codegen"
+    "gen": "graphql-codegen && prisma generate",
+    "prisma": "prisma"
   },
   "dependencies": {
     "@apollo/federation": "^0.33.3",
-    "apollo-server": "^3.4.0"
+    "@prisma/client": "^3.4.1",
+    "apollo-server": "^3.4.0",
+    "graphql-scalars": "^1.13.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.2.2",
@@ -23,6 +26,7 @@
     "copyfiles": "^2.4.1",
     "dotenv": "^10.0.0",
     "graphql": "^15.7.2",
+    "prisma": "^3.4.1",
     "rimraf": "^3.0.2",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.4.4"

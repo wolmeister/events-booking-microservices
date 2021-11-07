@@ -1,9 +1,16 @@
-type User @key(fields: "walletId") {
-  id: ID
-  username: String
-  walletId: String
+scalar Date
+
+type User @key(fields: "id") {
+  id: Int!
+  email: String!
+  name: String!
+  cpf: String!
+  phone: String!
+  password: String!
+  birthdate: Date!
+  createdAt: Date!
 }
 
 type Query {
-  user(id: ID): User
+  users: [User!]!
 }

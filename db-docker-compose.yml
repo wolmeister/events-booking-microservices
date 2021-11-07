@@ -1,0 +1,39 @@
+# Run all services databases for local development
+version: '3.8'
+
+services:
+  user-db:
+    container_name: user-db
+    image: postgres:14-alpine
+    volumes:
+      - userdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=events-booking
+      - POSTGRES_PASSWORD=password
+    ports:
+      - '5432:5432'
+  event-db:
+    container_name: event-db
+    image: bitnami/mongodb
+    volumes:
+      - eventdata:/bitnami/mongodb
+    environment:
+      - MONGODB_REPLICA_SET_MODE=primary
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '27017:27017'
+  inscription-db:
+    container_name: inscription-db
+    image: bitnami/mongodb
+    volumes:
+      - inscriptiondata:/bitnami/mongodb
+    environment:
+      - MONGODB_REPLICA_SET_MODE=primary
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '27018:27017'
+
+volumes:
+  userdata:
+  eventdata:
+  inscriptiondata:
