@@ -5,12 +5,22 @@ type User @key(fields: "id") {
   email: String!
   name: String!
   cpf: String!
-  phone: String!
-  password: String!
-  birthdate: Date!
   createdAt: Date!
 }
 
 type Query {
-  users: [User!]!
+  # The authenticated user
+  user: User!
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+type Mutation {
+  # fastSignup(email: String!, cpf: String!): AuthPayload!
+  signup(name: String!, email: String!, cpf: String!, password: String!): AuthPayload!
+  signin(email: String!, password: String!): AuthPayload!
+  # updateProfile(name: String, password: String): User!
 }

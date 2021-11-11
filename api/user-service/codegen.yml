@@ -6,5 +6,12 @@ generates:
       - typescript-resolvers
     config:
       federation: true
+      contextType: ../context#Context
+      useIndexSignature: true
+      # avoidOptionals:
+      #   field: false
+      #   inputValue: false
+      #   object: false
+      #   defaultValue: false
       scalars:
         Date: Date

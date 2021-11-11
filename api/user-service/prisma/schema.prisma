@@ -12,8 +12,6 @@ model User {
   email     String   @unique
   name      String
   cpf       String   @unique
-  phone     String
   password  String
-  birthdate DateTime
   createdAt DateTime @default(now())
 }
