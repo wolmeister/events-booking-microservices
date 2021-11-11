@@ -8,7 +8,8 @@
     "gateway-service": "pnpm --filter @events-booking/gateway-service",
     "inscription-service": "pnpm --filter @events-booking/inscription-service",
     "report-service": "pnpm --filter @events-booking/report-service",
-    "user-service": "pnpm --filter @events-booking/user-service"
+    "user-service": "pnpm --filter @events-booking/user-service",
+    "dev": "pnpm run --parallel dev"
   },
   "dependencies": {},
   "devDependencies": {}
