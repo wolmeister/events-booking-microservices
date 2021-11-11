@@ -1,3 +1,4 @@
+import { UserInputError } from 'apollo-server';
 import { DateResolver } from 'graphql-scalars';
 import { PrismaClient, User } from '@prisma/client';
 import { hash, genSalt, compare } from 'bcryptjs';
@@ -5,7 +6,6 @@ import { sign as signJwt } from 'jsonwebtoken';
 import { validate as validateEmail } from 'email-validator';
 
 import { Resolvers } from '@generated/resolvers-types';
-import { UserInputError } from 'apollo-server';
 
 const prisma = new PrismaClient();
 

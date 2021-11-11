@@ -30,6 +30,7 @@ dependencies:
   apollo-server: 3.4.0_graphql@15.7.2
   bcryptjs: 2.4.3
   email-validator: 2.0.4
+  graphql: 15.7.2
   graphql-middleware: 6.1.12_graphql@15.7.2
   graphql-scalars: 1.13.1_graphql@15.7.2
   graphql-shield: 7.5.0_e4280db023134f3d3767a05c637caf01
@@ -44,7 +45,6 @@ devDependencies:
   '@types/node': 16.11.6
   copyfiles: 2.4.1
   dotenv: 10.0.0
-  graphql: 15.7.2
   prisma: 3.4.1
   rimraf: 3.0.2
   ts-node-dev: 1.1.8_typescript@4.4.4
@@ -2662,7 +2662,7 @@ packages:
   /graphql/15.7.2:
     resolution: {integrity: sha512-AnnKk7hFQFmU/2I9YSQf3xw44ctnSFCfp3zE0N6W174gqe9fWG/2rKaKxROK7CcI3XtERpjEKFqts8o319Kf7A==}
     engines: {node: '>= 10.x'}
-    dev: true
+    dev: false
 
   /has-ansi/2.0.0:
     resolution: {integrity: sha1-NPUEnOHs3ysGSa8+8k5F7TVBbZE=}
