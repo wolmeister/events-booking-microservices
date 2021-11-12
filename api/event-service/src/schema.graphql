@@ -1,0 +1,23 @@
+scalar Date
+
+type Event @key(fields: "id") {
+  id: ID!
+  # owner
+  name: String!
+  location: String!
+  description: String
+  certificateTemplate: String
+  date: Date!
+  cancelUntil: Date!
+  totalSlots: Int!
+  availableSlots: Int!
+  createdAt: Date!
+}
+
+type Query {
+  events: [Event!]!
+}
+
+type Mutation {
+  foo: String
+}
