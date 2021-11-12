@@ -64,6 +64,9 @@ export const resolvers: Resolvers = {
       };
     },
   },
+};
+
+export const referenceResolvers: Pick<Resolvers, 'User'> = {
   User: {
     __resolveReference: reference => {
       const { id } = reference;

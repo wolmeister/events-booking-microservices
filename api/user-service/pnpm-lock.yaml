@@ -9,6 +9,7 @@ specifiers:
   '@types/bcryptjs': ^2.4.2
   '@types/jsonwebtoken': ^8.5.5
   '@types/node': ^16.11.6
+  apollo-graphql: ^0.9.5
   apollo-server: ^3.4.0
   bcryptjs: ^2.4.3
   copyfiles: ^2.4.1
@@ -27,6 +28,7 @@ specifiers:
 dependencies:
   '@apollo/federation': 0.33.3_graphql@15.7.2
   '@prisma/client': 3.4.1_prisma@3.4.1
+  apollo-graphql: 0.9.5_graphql@15.7.2
   apollo-server: 3.4.0_graphql@15.7.2
   bcryptjs: 2.4.3
   email-validator: 2.0.4
@@ -59,7 +61,7 @@ packages:
       graphql: ^15.5.3
     dependencies:
       '@apollo/subgraph': 0.1.2_graphql@15.7.2
-      apollo-graphql: 0.9.4_graphql@15.7.2
+      apollo-graphql: 0.9.5_graphql@15.7.2
       apollo-server-types: 3.3.0_graphql@15.7.2
       graphql: 15.7.2
       lodash.xorby: 4.7.0
@@ -91,7 +93,7 @@ packages:
     peerDependencies:
       graphql: ^15.5.3
     dependencies:
-      apollo-graphql: 0.9.4_graphql@15.7.2
+      apollo-graphql: 0.9.5_graphql@15.7.2
       graphql: 15.7.2
     dev: false
 
@@ -1479,8 +1481,8 @@ packages:
       apollo-server-env: 4.1.0
     dev: false
 
-  /apollo-graphql/0.9.4_graphql@15.7.2:
-    resolution: {integrity: sha512-0X2sZxfmn7lJrRknUPBG+L0LP1B0SKX1qtULIWrDbIpyl9LuSyjnDaGtmvc4IQtyKvmQXtAhEHBnprRokkjkyw==}
+  /apollo-graphql/0.9.5_graphql@15.7.2:
+    resolution: {integrity: sha512-RGt5k2JeBqrmnwRM0VOgWFiGKlGJMfmiif/4JvdaEqhMJ+xqe/9cfDYzXfn33ke2eWixsAbjEbRfy8XbaN9nTw==}
     engines: {node: '>=6'}
     peerDependencies:
       graphql: ^14.2.1 || ^15.0.0
@@ -1517,7 +1519,7 @@ packages:
       '@graphql-tools/utils': 8.5.1_graphql@15.7.2
       '@josephg/resolvable': 1.0.1
       apollo-datasource: 3.2.0
-      apollo-graphql: 0.9.4_graphql@15.7.2
+      apollo-graphql: 0.9.5_graphql@15.7.2
       apollo-reporting-protobuf: 3.1.0
       apollo-server-caching: 3.2.0
       apollo-server-env: 4.1.0
