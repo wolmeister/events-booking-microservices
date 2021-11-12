@@ -1,22 +1,27 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { addResolversToSchema } from 'apollo-graphql';
 import { ApolloServer, gql } from 'apollo-server';
 import { buildSubgraphSchema } from '@apollo/federation';
 import { applyMiddleware } from 'graphql-middleware';
 
-import { resolvers } from './resolvers';
+import { referenceResolvers, resolvers } from './resolvers';
 import { permissions } from './permissions';
 import { Context } from './context';
 
 const { PORT = 4002 } = process.env;
 
 // Read and parse schema
-const schema = readFileSync(join(__dirname, 'schema.graphql')).toString('utf-8');
-const typeDefs = gql(schema);
+// Middleware workaround: https://github.com/maticzav/graphql-middleware/issues/351#issuecomment-807837670
+const schemaText = readFileSync(join(__dirname, 'schema.graphql')).toString('utf-8');
+const typeDefs = gql(schemaText);
+const rawSchema = buildSubgraphSchema([{ typeDefs, resolvers }]);
+const schema = applyMiddleware(rawSchema, permissions);
+addResolversToSchema(schema, referenceResolvers);
 
 // Initialize an Apollo Server instance
 const server = new ApolloServer({
-  schema: applyMiddleware(buildSubgraphSchema([{ typeDefs, resolvers }]), permissions),
+  schema,
   context: ({ req }): Context => {
     const { headers } = req;
     let authHeader: string | null = null;

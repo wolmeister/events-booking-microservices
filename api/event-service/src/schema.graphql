@@ -1,17 +1,21 @@
-scalar Date
+scalar DateTime
+
+extend type User @key(fields: "id") {
+  id: ID! @external
+}
 
 type Event @key(fields: "id") {
   id: ID!
-  # owner
+  owner: User!
   name: String!
   location: String!
   description: String
   certificateTemplate: String
-  date: Date!
-  cancelUntil: Date!
+  date: DateTime!
+  cancelUntil: DateTime!
   totalSlots: Int!
-  availableSlots: Int!
-  createdAt: Date!
+  availableSlots: Int! # Populate from inscription service?
+  createdAt: DateTime!
 }
 
 type Query {
@@ -19,5 +23,13 @@ type Query {
 }
 
 type Mutation {
-  foo: String
+  createEvent(
+    name: String!
+    location: String!
+    description: String
+    certificateTemplate: String
+    date: DateTime!
+    cancelUntil: DateTime!
+    totalSlots: Int!
+  ): Event!
 }

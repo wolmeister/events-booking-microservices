@@ -13,8 +13,12 @@ const isAuthenticated = rule()((parent, args, { auth }: Context) => {
 });
 
 const permissionsSchema: PermissionsSchema = {
-  Query: {},
-  Mutation: {},
+  Query: {
+    events: isAuthenticated,
+  },
+  Mutation: {
+    createEvent: isAuthenticated,
+  },
 };
 
 export const permissions = shield(permissionsSchema);
