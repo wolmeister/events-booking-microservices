@@ -13,7 +13,7 @@ const createJwt = (user: User): string => {
   // TODO: Add env
   return signJwt({ userId: user.id }, 'ual3039', {
     algorithm: 'HS256',
-    subject: String(user.id),
+    subject: user.id,
     expiresIn: '1d',
   });
 };
