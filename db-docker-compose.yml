@@ -33,7 +33,11 @@ services:
       - inscriptiondata:/bitnami/mongodb
     environment:
       - MONGODB_REPLICA_SET_MODE=primary
-      - ALLOW_EMPTY_PASSWORD=yes
+      - MONGODB_USERNAME=user
+      - MONGODB_PASSWORD=password
+      - MONGODB_DATABASE=inscriptions
+      - MONGODB_ROOT_PASSWORD=rootpassword
+      - MONGODB_REPLICA_SET_KEY=replicasetkey
     ports:
       - '27018:27017'
 

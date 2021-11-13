@@ -1,0 +1,27 @@
+scalar DateTime
+
+extend type User @key(fields: "id") {
+  id: ID! @external
+}
+
+extend type Event @key(fields: "id") {
+  id: ID! @external
+}
+
+type Inscription @key(fields: "id") {
+  id: ID!
+  user: User!
+  event: Event!
+  certificateCode: String
+  checkintAt: DateTime
+  createdAt: DateTime!
+}
+
+type Query {
+  inscriptions: [Inscription!]!
+}
+
+type Mutation {
+  register(eventId: String!): Inscription!
+  checkIn(eventId: String!): Inscription!
+}

@@ -10,6 +10,7 @@ import isReachable from 'is-reachable';
 const serviceList: Required<ServiceEndpointDefinition>[] = [
   { name: 'user-service', url: 'http://localhost:4001' },
   { name: 'event-service', url: 'http://localhost:4002' },
+  { name: 'inscription-service', url: 'http://localhost:4003' },
 ];
 
 async function start() {

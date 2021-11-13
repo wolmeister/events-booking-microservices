@@ -1,0 +1,18 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["mongoDb"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Inscription {
+  id              String    @id @default(uuid()) @map("_id")
+  userId          String
+  eventId         String
+  certificateCode String?
+  checkintAt      DateTime?
+  createdAt       DateTime  @default(now())
+}
