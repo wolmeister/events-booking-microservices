@@ -13,7 +13,9 @@ const isAuthenticated = rule()((parent, args, { auth }: Context) => {
 });
 
 const permissionsSchema: PermissionsSchema = {
-  Query: {},
+  Query: {
+    inscriptions: isAuthenticated,
+  },
   Mutation: {},
 };
 

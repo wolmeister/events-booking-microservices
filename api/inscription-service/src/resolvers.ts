@@ -19,7 +19,14 @@ function mapPrismaInscription(prismaInscription: PrismaInscription): Inscription
 
 export const resolvers: Resolvers = {
   DateTime: DateTimeResolver,
-  Query: {},
+  Query: {
+    inscriptions: async (parent, data, context) => {
+      const results = await prisma.inscription.findMany({
+        where: { userId: context.auth.userId },
+      });
+      return results.map(mapPrismaInscription);
+    },
+  },
   Mutation: {},
 };
 

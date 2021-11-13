@@ -38,8 +38,9 @@ services:
       - MONGODB_DATABASE=inscriptions
       - MONGODB_ROOT_PASSWORD=rootpassword
       - MONGODB_REPLICA_SET_KEY=replicasetkey
+      - MONGODB_PORT_NUMBER=27018
     ports:
-      - '27018:27017'
+      - '27018:27018'
 
 volumes:
   userdata:
