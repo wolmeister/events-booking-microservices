@@ -5,6 +5,7 @@ import { ApolloServer, gql } from 'apollo-server';
 import { buildSubgraphSchema } from '@apollo/federation';
 import { applyMiddleware } from 'graphql-middleware';
 
+import { startGrpcServer } from './grpc/grpc-server';
 import { referenceResolvers, resolvers } from './resolvers';
 import { permissions } from './permissions';
 import { Context } from './context';
@@ -35,7 +36,12 @@ const server = new ApolloServer({
   },
 });
 
-// Start server
+// Start Apollo server
 server.listen({ port: PORT }).then(({ url }) => {
   console.log(`Event Service ready at ${url}`);
+});
+
+// Start gRPC server
+startGrpcServer().then(port => {
+  console.log(`Event Service gRPC ready at 127.0.0.1:${port}`);
 });

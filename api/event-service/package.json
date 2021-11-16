@@ -10,10 +10,13 @@
     "build": "rimraf dist && tsc && copyfiles --up 1 src/*.graphql dist/",
     "dev": "ts-node-dev --respawn --transpile-only --clear -r dotenv/config src/index.ts",
     "gen": "graphql-codegen && prisma generate",
-    "prisma": "prisma"
+    "prisma": "prisma",
+    "rpc": "proto-loader-gen-types --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=src/__generated__/proto/ src/grpc/*.proto"
   },
   "dependencies": {
     "@apollo/federation": "^0.33.3",
+    "@grpc/grpc-js": "^1.4.4",
+    "@grpc/proto-loader": "^0.6.6",
     "@prisma/client": "^3.4.1",
     "apollo-graphql": "^0.9.5",
     "apollo-server": "^3.4.0",
