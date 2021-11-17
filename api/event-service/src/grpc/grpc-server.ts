@@ -1,4 +1,10 @@
-import { Server, ServerCredentials, loadPackageDefinition } from '@grpc/grpc-js';
+import {
+  Server,
+  ServerCredentials,
+  loadPackageDefinition,
+  StatusBuilder,
+  status as Status,
+} from '@grpc/grpc-js';
 import { load } from '@grpc/proto-loader';
 import { join } from 'path';
 import { promisify } from 'util';
@@ -23,7 +29,8 @@ const handlersImplementation: EventServiceHandlers = {
         createdAt: event.createdAt.toISOString(),
       });
     } else {
-      callback(null, null);
+      const status = new StatusBuilder().withCode(Status.NOT_FOUND).build();
+      callback(status, null);
     }
   },
 };
