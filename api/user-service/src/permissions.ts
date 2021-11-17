@@ -19,4 +19,6 @@ const permissionsSchema: PermissionsSchema = {
   Mutation: {},
 };
 
-export const permissions = shield(permissionsSchema);
+export const permissions = shield(permissionsSchema, {
+  allowExternalErrors: true,
+});

@@ -21,4 +21,6 @@ const permissionsSchema: PermissionsSchema = {
   },
 };
 
-export const permissions = shield(permissionsSchema);
+export const permissions = shield(permissionsSchema, {
+  allowExternalErrors: true,
+});
