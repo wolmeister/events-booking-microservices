@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+message EventRequest {
+  string id = 1;
+}
+
+message EventResponse {
+  string id = 1;
+  string ownerId = 2;
+  string name = 3;
+  string location = 4;
+  string description = 5;
+  string certificateTemplate = 6;
+  string date = 7;
+  string cancelUntil = 8;
+  int32 totalSlots = 9;
+  int32 availableSlots = 10;
+  string createdAt = 11;
+}
+
+service EventService {
+  rpc getEvent(EventRequest) returns (EventResponse) {}
+}

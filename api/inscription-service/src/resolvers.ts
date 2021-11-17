@@ -2,6 +2,7 @@ import { DateTimeResolver } from 'graphql-scalars';
 import { PrismaClient, Inscription as PrismaInscription } from '@prisma/client';
 
 import { Resolvers, Inscription } from '@generated/resolvers-types';
+import { eventGrpcClient } from './grpc/grpc-client';
 
 const prisma = new PrismaClient();
 
@@ -27,7 +28,15 @@ export const resolvers: Resolvers = {
       return results.map(mapPrismaInscription);
     },
   },
-  Mutation: {},
+  Mutation: {
+    register: async (parent, data, context) => {
+      console.log('register', data);
+
+      const event = await eventGrpcClient.getEvent({ id: data.eventId });
+      console.log('event', event);
+      throw new Error('aff');
+    },
+  },
 };
 
 export const referenceResolvers: Pick<Resolvers, 'Inscription'> = {

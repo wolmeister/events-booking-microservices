@@ -4,7 +4,8 @@
     "outDir": "dist",
     "paths": {
       "@generated/*": ["./src/__generated__/*"]
-    }
+    },
+    "skipLibCheck": true
   },
   "include": ["./src"]
 }

@@ -1,9 +1,8 @@
 import { DateTimeResolver } from 'graphql-scalars';
-import { PrismaClient, Event as PrismaEvent } from '@prisma/client';
+import { Event as PrismaEvent } from '@prisma/client';
 
 import { Resolvers, Event } from '@generated/resolvers-types';
-
-const prisma = new PrismaClient();
+import { prisma } from './prisma';
 
 function mapPrismaEvent(prismaEvent: PrismaEvent): Event {
   return {
