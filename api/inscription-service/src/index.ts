@@ -16,8 +16,7 @@ const { PORT = 4003 } = process.env;
 const schemaText = readFileSync(join(__dirname, 'schema.graphql')).toString('utf-8');
 const typeDefs = gql(schemaText);
 const rawSchema = buildSubgraphSchema([{ typeDefs, resolvers }]);
-const schema = rawSchema;
-// const schema = applyMiddleware(rawSchema, permissions);
+const schema = applyMiddleware(rawSchema, permissions);
 addResolversToSchema(schema, referenceResolvers);
 
 // Initialize an Apollo Server instance
