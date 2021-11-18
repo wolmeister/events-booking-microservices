@@ -1,5 +1,6 @@
 import { DateTimeResolver } from 'graphql-scalars';
 import { PrismaClient, Inscription as PrismaInscription } from '@prisma/client';
+import { UserInputError } from 'apollo-server';
 
 import { Resolvers, Inscription } from '@generated/resolvers-types';
 import { eventGrpcClient } from './grpc/grpc-client';
@@ -30,11 +31,35 @@ export const resolvers: Resolvers = {
   },
   Mutation: {
     register: async (parent, data, context) => {
-      console.log('register', data);
-
+      // Check if the event exists
       const event = await eventGrpcClient.getEvent({ id: data.eventId });
-      console.log('event', event);
-      throw new Error('aff');
+      if (!event) {
+        throw new UserInputError('Invalid event id');
+      }
+
+      // Check if the user isn´t already registered
+      const currentInscription = await prisma.inscription.findFirst({
+        where: {
+          userId: context.auth.userId,
+          eventId: event.id,
+        },
+      });
+      if (currentInscription) {
+        throw new UserInputError('User already registered in the event');
+      }
+
+      // @TODO: Send email
+      // @TODO: Add lock
+      // @TODO: Update events slots
+
+      const createdInscription = await prisma.inscription.create({
+        data: {
+          eventId: data.eventId,
+          userId: context.auth.userId,
+        },
+      });
+
+      return mapPrismaInscription(createdInscription);
     },
   },
 };
