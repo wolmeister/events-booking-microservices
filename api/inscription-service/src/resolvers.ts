@@ -61,6 +61,32 @@ export const resolvers: Resolvers = {
 
       return mapPrismaInscription(createdInscription);
     },
+    checkIn: async (parent, data, context) => {
+      // Check if the user is registered in the event
+      const currentInscription = await prisma.inscription.findFirst({
+        where: {
+          userId: context.auth.userId,
+          eventId: data.eventId,
+        },
+      });
+      if (!currentInscription) {
+        throw new UserInputError('User is not registered in the event or the event id is invalid');
+      }
+
+      // Check if the user has already checked in
+      if (currentInscription.checkintAt) {
+        throw new UserInputError('User has already checked in');
+      }
+
+      // @TODO: Add lock
+
+      const checkedInInscription = await prisma.inscription.update({
+        where: { id: currentInscription.id },
+        data: { checkintAt: new Date() },
+      });
+
+      return mapPrismaInscription(checkedInInscription);
+    },
   },
 };
 
