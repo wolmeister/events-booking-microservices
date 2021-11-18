@@ -8,39 +8,30 @@ services:
     volumes:
       - userdata:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=events-booking
+      - POSTGRES_DB=users
       - POSTGRES_PASSWORD=password
     ports:
       - '5432:5432'
   event-db:
     container_name: event-db
-    image: bitnami/mongodb
+    image: postgres:14-alpine
     volumes:
-      - eventdata:/bitnami/mongodb
+      - eventdata:/var/lib/postgresql/data
     environment:
-      - MONGODB_REPLICA_SET_MODE=primary
-      - MONGODB_USERNAME=user
-      - MONGODB_PASSWORD=password
-      - MONGODB_DATABASE=events
-      - MONGODB_ROOT_PASSWORD=rootpassword
-      - MONGODB_REPLICA_SET_KEY=replicasetkey
+      - POSTGRES_DB=events
+      - POSTGRES_PASSWORD=password
     ports:
-      - '27017:27017'
+      - '5433:5432'
   inscription-db:
     container_name: inscription-db
-    image: bitnami/mongodb
+    image: postgres:14-alpine
     volumes:
-      - inscriptiondata:/bitnami/mongodb
+      - inscriptiondata:/var/lib/postgresql/data
     environment:
-      - MONGODB_REPLICA_SET_MODE=primary
-      - MONGODB_USERNAME=user
-      - MONGODB_PASSWORD=password
-      - MONGODB_DATABASE=inscriptions
-      - MONGODB_ROOT_PASSWORD=rootpassword
-      - MONGODB_REPLICA_SET_KEY=replicasetkey
-      - MONGODB_PORT_NUMBER=27018
+      - POSTGRES_DB=inscriptions
+      - POSTGRES_PASSWORD=password
     ports:
-      - '27018:27018'
+      - '5434:5432'
 
 volumes:
   userdata:
