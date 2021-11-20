@@ -1,5 +1,6 @@
 import '@tsed/swagger';
 import '@tsed/platform-express';
+import '@tsed/ajv';
 import { Inject } from '@tsed/di';
 import { PlatformApplication, Configuration } from '@tsed/common';
 import express from 'express';
