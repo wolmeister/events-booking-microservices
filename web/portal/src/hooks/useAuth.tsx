@@ -1,6 +1,14 @@
-import { createContext, PropsWithChildren, useContext } from 'react';
-import { useMutation, gql } from '@apollo/client';
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useState,
+} from 'react';
+import { useMutation, useApolloClient, gql } from '@apollo/client';
 import { ExtractNodeTypes } from '../types';
+
+const LOCAL_STORAGE_AUTH_KEY = '@events-booking/auth';
 
 const SIGNIN_MUTATION = gql(/* GraphQL */ `
   mutation signin($email: String!, $password: String!) {
@@ -23,8 +31,6 @@ type AuthContextData = {
   signOut(): void;
 };
 
-const LOCAL_STORAGE_USER_KEY = '@events-booking/user';
-
 const AuthContext = createContext<AuthContextData>({
   auth: null,
   async signIn() {},
@@ -32,46 +38,43 @@ const AuthContext = createContext<AuthContextData>({
 });
 
 function AuthProvider({ children }: PropsWithChildren<unknown>) {
-  // const queryClient = useQueryClient();
-  // const { mutateAsync: authenticateAsync } = useMutation((authRequest: AuthRequest) =>
-  // http<AuthResponse>('/auth', { body: authRequest })
-  // );
+  const apolloClient = useApolloClient();
 
-  const [foo] = useMutation(SIGNIN_MUTATION);
-  foo({
-    variables: {
-      name: 'f',
-    },
+  const [signinMutation] = useMutation(SIGNIN_MUTATION);
+
+  const [auth, setAuth] = useState<Auth | null>(() => {
+    // TODO: Get auth from api
+    const storedAuth = localStorage.getItem(LOCAL_STORAGE_AUTH_KEY);
+    if (storedAuth) {
+      return JSON.parse(storedAuth);
+    }
+    return null;
   });
 
-  // const [user, setUser] = useState<User | null>(() => {
-  //   // TODO: Get user from api (/api/users/me)
-  //   const storedUser = localStorage.getItem(LOCAL_STORAGE_USER_KEY);
-  //   if (storedUser) {
-  //     return JSON.parse(storedUser);
-  //   }
-  //   return null;
-  // });
+  const signIn = useCallback(
+    async (authRequest: AuthRequest) => {
+      const result = await signinMutation({ variables: authRequest });
+      if (result.errors) {
+        throw result.errors[0];
+      }
+      const auth = result.data?.signin;
+      if (!auth) {
+        throw new Error('Error authenticating');
+      }
+      setAuth(auth);
+      localStorage.setItem(LOCAL_STORAGE_AUTH_KEY, JSON.stringify(auth));
+    },
+    [signinMutation]
+  );
 
-  // const signIn = useCallback(
-  //   async (authRequest: AuthRequest) => {
-  //     const result = await authenticateAsync(authRequest);
-  //     setJwt(result.token);
-  //     setUser(result.user);
-  //     localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(result.user));
-  //   },
-  //   [authenticateAsync]
-  // );
-
-  // const signOut = useCallback(() => {
-  //   setUser(null);
-  //   localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
-  //   queryClient.clear();
-  // }, [queryClient]);
+  const signOut = useCallback(async () => {
+    apolloClient.clearStore();
+    setAuth(null);
+    localStorage.removeItem(LOCAL_STORAGE_AUTH_KEY);
+  }, [apolloClient]);
 
   return (
-    <AuthContext.Provider value={{}}>
-      {/* <AuthContext.Provider value={{ user, signIn, signOut }}></AuthContext.Provider> */}
+    <AuthContext.Provider value={{ auth, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
