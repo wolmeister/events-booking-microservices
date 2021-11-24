@@ -1,5 +1,6 @@
 import { createContext, PropsWithChildren, useContext } from 'react';
 import { useMutation, gql } from '@apollo/client';
+import { ExtractNodeTypes } from '../types';
 
 const SIGNIN_MUTATION = gql(/* GraphQL */ `
   mutation signin($email: String!, $password: String!) {
@@ -12,18 +13,22 @@ const SIGNIN_MUTATION = gql(/* GraphQL */ `
   }
 `);
 
+type SigninMutationTypes = ExtractNodeTypes<typeof SIGNIN_MUTATION>;
+type Auth = SigninMutationTypes[0]['signin'];
+type AuthRequest = SigninMutationTypes[1];
+
 type AuthContextData = {
-  // user: User | null;
-  // signIn(authRequest: AuthRequest): Promise<void>;
-  // signOut(): void;
+  auth: Auth | null;
+  signIn(authRequest: AuthRequest): Promise<void>;
+  signOut(): void;
 };
 
 const LOCAL_STORAGE_USER_KEY = '@events-booking/user';
 
 const AuthContext = createContext<AuthContextData>({
-  // user: null,
-  // async signIn() {},
-  // signOut() {},
+  auth: null,
+  async signIn() {},
+  signOut() {},
 });
 
 function AuthProvider({ children }: PropsWithChildren<unknown>) {
