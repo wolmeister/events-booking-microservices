@@ -1,7 +1,7 @@
 import { createContext, PropsWithChildren, useContext } from 'react';
 import { useMutation, gql } from '@apollo/client';
 
-const SIGNIN_MUTATION = gql(`
+const SIGNIN_MUTATION = gql(/* GraphQL */ `
   mutation signin($email: String!, $password: String!) {
     signin(email: $email, password: $password) {
       token

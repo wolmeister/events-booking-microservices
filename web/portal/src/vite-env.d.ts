@@ -1,2 +1,2 @@
 /// <reference types="vite/client" />
-/// <reference types="./gql" />
+/// <reference types="./__generated__/gql" />

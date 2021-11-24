@@ -1,16 +1,9 @@
 schema: ./schema.graphql
-# documents: './src/**/*.graphql'
-# documents: 'src/**/*.tsx'
 documents:
   - 'src/**/*.tsx'
-  - '!src/gql/**/*'
+  - '!src/__generated__/**/*'
 generates:
-  ./src/gql/:
+  ./src/__generated__/gql/:
     preset: gql-tag-operations-preset
     presetConfig:
-      # define which module you want to import your gql function from
       augmentedModuleName: '@apollo/client'
-    # plugins:
-    #   - typescript
-    #   - typescript-operations
-    #   - typescript-react-apollo
