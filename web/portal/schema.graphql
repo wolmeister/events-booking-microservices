@@ -1,0 +1,67 @@
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+type Event {
+  availableSlots: Int!
+  cancelUntil: DateTime!
+  certificateTemplate: String
+  createdAt: DateTime!
+  date: DateTime!
+  description: String
+  id: ID!
+  location: String!
+  name: String!
+  owner: User!
+  totalSlots: Int!
+}
+
+type Inscription {
+  certificateCode: String
+  checkintAt: DateTime
+  createdAt: DateTime!
+  event: Event!
+  id: ID!
+  user: User!
+}
+
+type Mutation {
+  checkIn(eventId: String!): Inscription!
+  createEvent(
+    cancelUntil: DateTime!
+    certificateTemplate: String
+    date: DateTime!
+    description: String
+    location: String!
+    name: String!
+    totalSlots: Int!
+  ): Event!
+  register(eventId: String!): Inscription!
+  signin(email: String!, password: String!): AuthPayload!
+  signup(cpf: String!, email: String!, name: String!, password: String!): AuthPayload!
+}
+
+type Query {
+  events: [Event!]!
+  inscriptions: [Inscription!]!
+  user: User!
+}
+
+type User {
+  cpf: String!
+  createdAt: Date!
+  email: String!
+  id: ID!
+  name: String!
+}
