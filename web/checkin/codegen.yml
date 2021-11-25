@@ -1,0 +1,9 @@
+schema: ./schema.graphql
+documents:
+  - 'src/**/*.tsx'
+  - '!src/__generated__/**/*'
+generates:
+  ./src/__generated__/gql/:
+    preset: gql-tag-operations-preset
+    presetConfig:
+      augmentedModuleName: '@apollo/client'

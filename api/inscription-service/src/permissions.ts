@@ -16,7 +16,9 @@ const permissionsSchema: PermissionsSchema = {
   Query: {
     inscriptions: isAuthenticated,
   },
-  Mutation: {},
+  Mutation: {
+    generateCertificate: isAuthenticated,
+  },
 };
 
 export const permissions = shield(permissionsSchema, {

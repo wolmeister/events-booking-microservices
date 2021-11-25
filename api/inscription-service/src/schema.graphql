@@ -17,11 +17,19 @@ type Inscription @key(fields: "id") {
   createdAt: DateTime!
 }
 
+type Certificate @key(fields: "code") {
+  code: ID!
+  url: String!
+}
+
 type Query {
   inscriptions: [Inscription!]!
+  certificate(code: String!): Certificate
 }
 
 type Mutation {
   register(eventId: String!): Inscription!
   checkIn(eventId: String!): Inscription!
+  cancel(eventId: String!): ID!
+  generateCertificate(eventId: String!): Certificate
 }
