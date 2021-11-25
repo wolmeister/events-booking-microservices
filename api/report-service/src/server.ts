@@ -6,6 +6,8 @@ import { PlatformApplication, Configuration } from '@tsed/common';
 import express from 'express';
 import path from 'path';
 
+import { ReportController } from './controllers/report-controller';
+
 const rootDir = path.resolve(__dirname);
 
 @Configuration({
@@ -18,7 +20,7 @@ const rootDir = path.resolve(__dirname);
     },
   ],
   mount: {
-    '/api': '${rootDir}/controllers/*.ts',
+    '/api': [ReportController],
   },
 })
 export class Server {
