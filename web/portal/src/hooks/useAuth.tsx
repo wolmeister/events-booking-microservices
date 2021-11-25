@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { useMutation, useApolloClient, gql } from '@apollo/client';
 import { ExtractNodeTypes } from '../types';
+import { setJwt } from '../jwt';
 
 const LOCAL_STORAGE_AUTH_KEY = '@events-booking/auth';
 
@@ -82,6 +83,7 @@ function AuthProvider({ children }: PropsWithChildren<unknown>) {
         throw new Error('Error authenticating');
       }
       setAuth(auth);
+      setJwt(auth.token);
       localStorage.setItem(LOCAL_STORAGE_AUTH_KEY, JSON.stringify(auth));
     },
     [signinMutation]
@@ -98,6 +100,7 @@ function AuthProvider({ children }: PropsWithChildren<unknown>) {
         throw new Error('Error authenticating');
       }
       setAuth(auth);
+      setJwt(auth.token);
       localStorage.setItem(LOCAL_STORAGE_AUTH_KEY, JSON.stringify(auth));
     },
     [signupMutation]
