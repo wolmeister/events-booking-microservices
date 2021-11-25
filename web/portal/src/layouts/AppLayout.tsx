@@ -20,7 +20,7 @@ export function AppLayout({ children }: { children: JSX.Element }) {
     if (location.pathname === '/') {
       setSelectedKeys(['events']);
     } else {
-      setSelectedKeys([location.pathname]);
+      setSelectedKeys([location.pathname.substring(1)]);
     }
   }, [location]);
 
@@ -34,6 +34,9 @@ export function AppLayout({ children }: { children: JSX.Element }) {
             </Menu.Item>
             <Menu.Item key="inscriptions" onClick={() => navigate('/inscriptions')}>
               My inscriptions
+            </Menu.Item>
+            <Menu.Item key="certificates" onClick={() => navigate('/certificates')}>
+              Certificates
             </Menu.Item>
           </Menu>
           <Avatar style={{ marginLeft: 'auto' }}>{avatar}</Avatar>

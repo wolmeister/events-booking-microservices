@@ -1,5 +1,4 @@
 import { Routes, Route } from 'react-router-dom';
-import { Layout, Menu } from 'antd';
 import 'antd/dist/antd.dark.css';
 
 import { AuthProvider } from './hooks/useAuth';
@@ -9,6 +8,7 @@ import { Events } from './screens/Events';
 import { Inscriptions } from './screens/Inscriptions';
 import { SignUp } from './screens/SignUp';
 import { SignIn } from './screens/SignIn';
+import { Certificates } from './screens/Certificates';
 import { AppLayout } from './layouts/AppLayout';
 
 export function App() {
@@ -32,6 +32,17 @@ export function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Inscriptions />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/certificates"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Certificates />
               </AppLayout>
             </ProtectedRoute>
           }
