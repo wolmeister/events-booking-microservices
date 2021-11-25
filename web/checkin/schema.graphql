@@ -43,7 +43,7 @@ type Inscription {
 
 type Mutation {
   cancel(eventId: String!): ID!
-  checkIn(eventId: String!): Inscription!
+  checkIn(eventId: String!, userId: String!): Inscription!
   createEvent(
     cancelUntil: DateTime!
     certificateTemplate: String
@@ -62,7 +62,7 @@ type Mutation {
 type Query {
   certificate(code: String!): Certificate
   events: [Event!]!
-  inscriptions: [Inscription!]!
+  inscriptions(eventId: String): [Inscription!]!
   user: User!
 }
 

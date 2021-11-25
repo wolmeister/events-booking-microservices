@@ -23,13 +23,13 @@ type Certificate @key(fields: "code") {
 }
 
 type Query {
-  inscriptions: [Inscription!]!
+  inscriptions(eventId: String): [Inscription!]!
   certificate(code: String!): Certificate
 }
 
 type Mutation {
   register(eventId: String!): Inscription!
-  checkIn(eventId: String!): Inscription!
+  checkIn(eventId: String!, userId: String!): Inscription!
   cancel(eventId: String!): ID!
   generateCertificate(eventId: String!): Certificate
 }

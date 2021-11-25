@@ -37,8 +37,12 @@ export const resolvers: Resolvers = {
   DateTime: DateTimeResolver,
   Query: {
     inscriptions: async (parent, data, context) => {
+      // @TODO; Only the owner should checkin, separate in two endpoints
       const results = await prisma.inscription.findMany({
-        where: { userId: context.auth.userId },
+        where: {
+          userId: data.eventId ? undefined : context.auth.userId,
+          eventId: data.eventId || undefined,
+        },
       });
       return results.map(mapPrismaInscription);
     },
@@ -93,10 +97,11 @@ export const resolvers: Resolvers = {
       return mapPrismaInscription(createdInscription);
     },
     checkIn: async (parent, data, context) => {
+      // @TODO; Only the owner should checkin
       // Check if the user is registered in the event
       const currentInscription = await prisma.inscription.findFirst({
         where: {
-          userId: context.auth.userId,
+          userId: data.userId,
           eventId: data.eventId,
         },
       });
