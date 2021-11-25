@@ -4,8 +4,10 @@ import { PrismaClient, User } from '@prisma/client';
 import { hash, genSalt, compare } from 'bcryptjs';
 import { sign as signJwt } from 'jsonwebtoken';
 import { validate as validateEmail } from 'email-validator';
+import { v4 as uuid } from 'uuid';
 
 import { Resolvers } from '@generated/resolvers-types';
+import { sendEmail } from './drivers/email-driver';
 
 const prisma = new PrismaClient();
 
@@ -29,6 +31,35 @@ export const resolvers: Resolvers = {
     },
   },
   Mutation: {
+    fastSignup: async (parent, data) => {
+      if (!validateEmail(data.email)) {
+        throw new UserInputError('Invalid email');
+      }
+
+      const generatedPassword = uuid();
+      const salt = await genSalt();
+      const password = await hash(generatedPassword, salt);
+      const user = await prisma.user.create({
+        data: {
+          ...data,
+          password,
+          name: data.email.split('@')[0],
+        },
+      });
+
+      await sendEmail({
+        subject: 'New account at events',
+        to: [
+          {
+            name: data.email.split('@')[0],
+            email: data.email,
+          },
+        ],
+        text: `Use the password ${generatedPassword} to login`,
+      });
+
+      return user;
+    },
     signup: async (parent, data) => {
       if (!validateEmail(data.email)) {
         throw new UserInputError('Invalid email');

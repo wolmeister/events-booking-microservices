@@ -19,7 +19,7 @@ type AuthPayload {
 }
 
 type Mutation {
-  # fastSignup(email: String!, cpf: String!): AuthPayload!
+  fastSignup(email: String!, cpf: String!): User!
   signup(name: String!, email: String!, cpf: String!, password: String!): AuthPayload!
   signin(email: String!, password: String!): AuthPayload!
   # updateProfile(name: String, password: String): User!
