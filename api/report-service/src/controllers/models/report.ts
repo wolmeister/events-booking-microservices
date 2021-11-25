@@ -16,8 +16,3 @@ export class ReportRequest {
   @Property()
   data?: Record<string, unknown>;
 }
-
-export class ReportResponse {
-  @Property()
-  readonly url: string;
-}

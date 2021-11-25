@@ -3,28 +3,16 @@ import { Docs } from '@tsed/swagger';
 import { Description, Required, Returns } from '@tsed/schema';
 import { compile } from 'ejs';
 import puppeteer from 'puppeteer';
-import { Client } from 'minio';
 
-import { ReportRequest, ReportResponse } from './models/report';
-
-// TODO: add .env
-const minioClient = new Client({
-  endPoint: '127.0.0.1',
-  port: 9000,
-  useSSL: false,
-  accessKey: 'minio_access_key',
-  secretKey: 'minio_secret_key',
-});
+import { ReportRequest } from './models/report';
 
 @Controller('/reports')
 @Docs()
 export class ReportController {
   @Post('/')
   @Description('Generates a pdf report')
-  @Returns(200, ReportResponse)
-  public async generate(
-    @BodyParams() @Required() body: ReportRequest
-  ): Promise<ReportResponse> {
+  @(Returns(200, Buffer).ContentType('application/pdf'))
+  public async generate(@BodyParams() @Required() body: ReportRequest): Promise<Buffer> {
     const template = compile(body.template);
     const compiledHtml = template(body.data);
 
@@ -37,14 +25,7 @@ export class ReportController {
       await page.setContent(compiledHtml);
       const pdfBuffer = await page.pdf();
 
-      // Upload to MinIO
-      await minioClient.putObject(body.bucket, body.name, pdfBuffer, {
-        'Content-Type': 'application/pdf',
-      });
-      const url = await minioClient.presignedGetObject(body.bucket, body.name);
-      return {
-        url,
-      };
+      return pdfBuffer;
     } finally {
       await browser?.close();
     }
