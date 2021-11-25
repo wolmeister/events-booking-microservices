@@ -9,8 +9,7 @@ import { Events } from './screens/Events';
 import { Inscriptions } from './screens/Inscriptions';
 import { SignUp } from './screens/SignUp';
 import { SignIn } from './screens/SignIn';
-
-const { Header, Content } = Layout;
+import { AppLayout } from './layouts/AppLayout';
 
 export function App() {
   return (
@@ -20,7 +19,9 @@ export function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <Events />
+              <AppLayout>
+                <Events />
+              </AppLayout>
             </ProtectedRoute>
           }
         />
@@ -29,10 +30,13 @@ export function App() {
           path="/inscriptions"
           element={
             <ProtectedRoute>
-              <Inscriptions />
+              <AppLayout>
+                <Inscriptions />
+              </AppLayout>
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/signin"
           element={
@@ -51,14 +55,5 @@ export function App() {
         />
       </Routes>
     </AuthProvider>
-    // <Layout>
-    //   <Header>
-    //     <Menu theme="dark" mode="horizontal">
-    //       <Menu.Item>Eventos</Menu.Item>
-    //       <Menu.Item>Eventos</Menu.Item>
-    //     </Menu>
-    //   </Header>
-    //   <Content />
-    // </Layout>
   );
 }
