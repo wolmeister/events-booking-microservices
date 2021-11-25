@@ -40,7 +40,7 @@ export const resolvers: Resolvers = {
       // @TODO; Only the owner should checkin, separate in two endpoints
       const results = await prisma.inscription.findMany({
         where: {
-          userId: data.eventId ? undefined : context.auth.userId,
+          userId: data.eventId || data.eventId === '' ? undefined : context.auth.userId,
           eventId: data.eventId || undefined,
         },
       });
@@ -75,7 +75,7 @@ export const resolvers: Resolvers = {
       // Check if the user isn´t already registered
       const currentInscription = await prisma.inscription.findFirst({
         where: {
-          userId: context.auth.userId,
+          userId: data.userId || context.auth.userId,
           eventId: event.id,
         },
       });
@@ -90,7 +90,7 @@ export const resolvers: Resolvers = {
       const createdInscription = await prisma.inscription.create({
         data: {
           eventId: data.eventId,
-          userId: context.auth.userId,
+          userId: data.userId || context.auth.userId,
         },
       });
 

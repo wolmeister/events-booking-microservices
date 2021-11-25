@@ -1,6 +1,10 @@
 import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client';
-import { Button, Card, Form, Select, Table, Tag, message } from 'antd';
+import { Button, Card, Form, Select, Table, Tag, message, Space } from 'antd';
 import { useCallback, useState, useEffect } from 'react';
+import {
+  FastSignupChecking,
+  FastSignupCheckingValues,
+} from '../components/FastSignupChecking';
 import { ExtractNodeTypes } from '../types';
 
 const { Option } = Select;
@@ -43,6 +47,22 @@ const CHECKIN_MUTATION = gql(/* GraphQL */ `
   }
 `);
 
+const FAST_SIGNUP_MUTATION = gql(/* GraphQL */ `
+  mutation fastSignup2($cpf: String!, $email: String!) {
+    fastSignup(cpf: $cpf, email: $email) {
+      id
+    }
+  }
+`);
+
+const REGISTER_MUTATION = gql(/* GraphQL */ `
+  mutation register($eventId: String!, $userId: String) {
+    register(eventId: $eventId, userId: $userId) {
+      id
+    }
+  }
+`);
+
 type EventsQueryTypes = ExtractNodeTypes<typeof EVENTS_QUERY>;
 type EventsQueryResponse = EventsQueryTypes[0]['events'];
 type Event = EventsQueryResponse[0];
@@ -55,8 +75,38 @@ export function CheckIn() {
   const eventsQuery = useQuery(EVENTS_QUERY);
   const [runInscriptionsQuery, inscriptionsQuery] = useLazyQuery(INSCRIPTIONS_QUERY);
   const [checkinMutation] = useMutation(CHECKIN_MUTATION);
+  const [fastSignupMutation] = useMutation(FAST_SIGNUP_MUTATION);
+  const [registerMutation] = useMutation(REGISTER_MUTATION);
 
   const [eventId, setEventId] = useState('');
+  const [fastSignupVisible, setFastSignupVisible] = useState(false);
+
+  const onSaveFastSignup = useCallback(async (values: FastSignupCheckingValues) => {
+    try {
+      const fastSignupResponse = await fastSignupMutation({
+        variables: { cpf: values.cpf, email: values.email },
+      });
+
+      await registerMutation({
+        variables: {
+          eventId: values.eventId,
+          userId: fastSignupResponse.data!.fastSignup.id,
+        },
+      });
+      await checkinMutation({
+        variables: {
+          eventId: values.eventId,
+          userId: fastSignupResponse.data!.fastSignup.id,
+        },
+      });
+      message.success('User successfully created and checked in!');
+      inscriptionsQuery.refetch();
+      setFastSignupVisible(false);
+    } catch (error) {
+      console.log(error);
+      message.error('Oops, error!');
+    }
+  }, []);
 
   useEffect(() => {
     runInscriptionsQuery({ variables: { eventId } });
@@ -99,6 +149,14 @@ export function CheckIn() {
             ))}
           </Select>
         </Form.Item>
+        <Button
+          type="primary"
+          htmlType="button"
+          style={{ marginLeft: 'auto', marginBottom: '24px', display: 'block' }}
+          onClick={() => setFastSignupVisible(true)}
+        >
+          Fast Signup/Checkin
+        </Button>
 
         <Table<Inscription>
           loading={inscriptionsQuery.loading}
@@ -160,6 +218,11 @@ export function CheckIn() {
           />
         </Table>
       </Card>
+      <FastSignupChecking
+        visible={fastSignupVisible}
+        onCancel={() => setFastSignupVisible(false)}
+        onSave={onSaveFastSignup}
+      />
     </>
   );
 }

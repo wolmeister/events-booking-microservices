@@ -28,7 +28,7 @@ type Query {
 }
 
 type Mutation {
-  register(eventId: String!): Inscription!
+  register(eventId: String!, userId: String): Inscription!
   checkIn(eventId: String!, userId: String!): Inscription!
   cancel(eventId: String!): ID!
   generateCertificate(eventId: String!): Certificate
