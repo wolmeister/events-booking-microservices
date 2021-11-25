@@ -194,6 +194,40 @@ export const resolvers: Resolvers = {
         url,
       };
     },
+    cancel: async (parent, data, context) => {
+      // Check if the event exists and still can be canceled
+      const event = await eventGrpcClient.getEvent({ id: data.eventId });
+      if (!event) {
+        throw new UserInputError('Invalid event id');
+      }
+
+      if (new Date() >= new Date(event.cancelUntil)) {
+        throw new UserInputError('The event can no longer be canceled');
+      }
+
+      // Check if the user is registered in the event
+      const inscription = await prisma.inscription.findFirst({
+        where: {
+          userId: context.auth.userId,
+          eventId: data.eventId,
+        },
+      });
+      if (!inscription) {
+        throw new UserInputError('User is not registered in the event');
+      }
+
+      // Check if the user is not checked in
+      if (inscription.checkintAt) {
+        throw new UserInputError('The user has already checked in');
+      }
+
+      // Delete the inscription
+      await prisma.inscription.delete({
+        where: { id: inscription.id },
+      });
+
+      return inscription.id;
+    },
   },
 };
 
