@@ -11,6 +11,7 @@
     "gen": "graphql-codegen"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.7.0",
     "@apollo/client": "^3.5.5",
     "antd": "^4.17.1",
     "graphql": "^15.7.2",
