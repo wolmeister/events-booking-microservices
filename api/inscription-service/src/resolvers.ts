@@ -2,6 +2,7 @@ import { DateTimeResolver } from 'graphql-scalars';
 import { PrismaClient, Inscription as PrismaInscription } from '@prisma/client';
 import { UserInputError } from 'apollo-server';
 import { Client as MinioClient } from 'minio';
+import { v4 as uuid } from 'uuid';
 
 import { Resolvers, Inscription } from '@generated/resolvers-types';
 import { eventGrpcClient } from './grpc/grpc-client';
@@ -11,12 +12,14 @@ const prisma = new PrismaClient();
 
 // TODO: add .env
 const minioClient = new MinioClient({
-  endPoint: '127.0.0.1',
+  endPoint: '177.44.248.85',
   port: 9000,
   useSSL: false,
   accessKey: 'minio_access_key',
   secretKey: 'minio_secret_key',
 });
+
+const BUCKET = 'certificates';
 
 function mapPrismaInscription(prismaInscription: PrismaInscription): Inscription {
   return {
@@ -38,6 +41,23 @@ export const resolvers: Resolvers = {
         where: { userId: context.auth.userId },
       });
       return results.map(mapPrismaInscription);
+    },
+    certificate: async (parent, data) => {
+      const inscription = await prisma.inscription.findFirst({
+        where: { certificateCode: data.code },
+      });
+
+      if (!inscription) {
+        return null;
+      }
+
+      return {
+        code: data.code,
+        url: await minioClient.presignedGetObject(
+          BUCKET,
+          `${inscription.certificateCode}.pdf`
+        ),
+      };
     },
   },
   Mutation: {
@@ -124,7 +144,7 @@ export const resolvers: Resolvers = {
         return {
           code: inscription.certificateCode,
           url: await minioClient.presignedGetObject(
-            'certificates',
+            BUCKET,
             `${inscription.certificateCode}.pdf`
           ),
         };
@@ -141,21 +161,36 @@ export const resolvers: Resolvers = {
       }
 
       // Create a new certificate
-      await generateReport({
+      const certificateCode = uuid();
+      const certificateName = `${certificateCode}.pdf`;
+
+      const certificate = await generateReport({
         template: event.certificateTemplate,
-        bucket: '',
-        name: '',
         data: {
           user: context.auth,
           event,
+          inscription: {
+            ...inscription,
+            certificateCode,
+          },
         },
       });
 
-      await minioClient.putObject('certificates', body.name, pdfBuffer, {
+      await minioClient.putObject(BUCKET, certificateName, certificate, {
         'Content-Type': 'application/pdf',
       });
-      const url = await minioClient.presignedGetObject(body.bucket, body.name);
+      const url = await minioClient.presignedGetObject(BUCKET, certificateName);
+
+      // Save certificate code to the inscription
+      await prisma.inscription.update({
+        where: { id: inscription.id },
+        data: {
+          certificateCode,
+        },
+      });
+
       return {
+        code: certificateCode,
         url,
       };
     },
