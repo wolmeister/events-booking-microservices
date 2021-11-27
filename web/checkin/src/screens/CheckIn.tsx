@@ -81,6 +81,21 @@ export function CheckIn() {
   const [eventId, setEventId] = useState('');
   const [fastSignupVisible, setFastSignupVisible] = useState(false);
 
+  const [online, setOnline] = useState(window.navigator.onLine);
+
+  useEffect(() => {
+    const listener = () => {
+      setOnline(window.navigator.onLine);
+    };
+    window.addEventListener('online', listener);
+    window.addEventListener('offline', listener);
+
+    return () => {
+      window.removeEventListener('online', listener);
+      window.removeEventListener('offline', listener);
+    };
+  }, []);
+
   const onSaveFastSignup = useCallback(async (values: FastSignupCheckingValues) => {
     try {
       const fastSignupResponse = await fastSignupMutation({
@@ -149,14 +164,22 @@ export function CheckIn() {
             ))}
           </Select>
         </Form.Item>
-        <Button
-          type="primary"
-          htmlType="button"
-          style={{ marginLeft: 'auto', marginBottom: '24px', display: 'block' }}
-          onClick={() => setFastSignupVisible(true)}
-        >
-          Fast Signup/Checkin
-        </Button>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Tag
+            color={online ? 'green' : 'red'}
+            style={{ marginLeft: 'auto', marginBottom: '24px', display: 'block' }}
+          >
+            {online ? 'Online' : 'Offline'}
+          </Tag>
+          <Button
+            type="primary"
+            htmlType="button"
+            style={{ marginLeft: '24px', marginBottom: '24px', display: 'block' }}
+            onClick={() => setFastSignupVisible(true)}
+          >
+            Fast Signup/Checkin
+          </Button>
+        </div>
 
         <Table<Inscription>
           loading={inscriptionsQuery.loading}
