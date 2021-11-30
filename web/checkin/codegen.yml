@@ -6,4 +6,4 @@ generates:
   ./src/__generated__/gql/:
     preset: gql-tag-operations-preset
     presetConfig:
-      augmentedModuleName: '@apollo/client'
+      augmentedModuleName: 'urql'

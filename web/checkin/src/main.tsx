@@ -1,43 +1,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
-import {
-  ApolloClient,
-  ApolloProvider,
-  createHttpLink,
-  InMemoryCache,
-} from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
+import { createClient, Provider } from 'urql';
 
 import { getJwt } from './jwt';
 import { App } from './App';
 
-const httpLink = createHttpLink({
+const client = createClient({
   // @todo: add .env
-  uri: 'http://localhost:4000/graphql',
-});
-
-const authLink = setContext((_, { headers }) => {
-  const token = getJwt();
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : '',
-    },
-  };
-});
-
-const client = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
+  url: 'http://localhost:4000/graphql',
+  fetchOptions: () => {
+    const token = getJwt();
+    return {
+      headers: { authorization: token ? `Bearer ${token}` : '' },
+    };
+  },
 });
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <ApolloProvider client={client}>
+      <Provider value={client}>
         <App />
-      </ApolloProvider>
+      </Provider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')

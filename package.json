@@ -10,6 +10,7 @@
     "report-service": "pnpm --filter @events-booking/report-service",
     "user-service": "pnpm --filter @events-booking/user-service",
     "portal": "pnpm --filter @events-booking/portal",
+    "checkin": "pnpm --filter @events-booking/checkin",
     "dev": "pnpm run --parallel dev"
   },
   "dependencies": {},

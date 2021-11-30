@@ -1,10 +1,11 @@
-import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { Button, Card, Form, Select, Table, Tag, message, Space } from 'antd';
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
+import { gql, useMutation, useQuery } from 'urql';
 import {
   FastSignupChecking,
   FastSignupCheckingValues,
 } from '../components/FastSignupChecking';
+import { useNetwork } from '../hooks/useNetwork';
 import { ExtractNodeTypes } from '../types';
 
 const { Option } = Select;
@@ -72,74 +73,60 @@ type InscriptionsQueryResponse = InscriptionsQueryTypes[0]['inscriptions'];
 type Inscription = InscriptionsQueryResponse[0];
 
 export function CheckIn() {
-  const eventsQuery = useQuery(EVENTS_QUERY);
-  const [runInscriptionsQuery, inscriptionsQuery] = useLazyQuery(INSCRIPTIONS_QUERY);
-  const [checkinMutation] = useMutation(CHECKIN_MUTATION);
-  const [fastSignupMutation] = useMutation(FAST_SIGNUP_MUTATION);
-  const [registerMutation] = useMutation(REGISTER_MUTATION);
-
+  const { online } = useNetwork();
   const [eventId, setEventId] = useState('');
   const [fastSignupVisible, setFastSignupVisible] = useState(false);
 
-  const [online, setOnline] = useState(window.navigator.onLine);
+  const [eventsQuery] = useQuery({ query: EVENTS_QUERY });
+  const [inscriptionsQuery, refectInscriptionsQuery] = useQuery({
+    query: INSCRIPTIONS_QUERY,
+    pause: !eventId,
+    variables: { eventId },
+  });
+  const [, checkinMutation] = useMutation(CHECKIN_MUTATION);
+  const [, fastSignupMutation] = useMutation(FAST_SIGNUP_MUTATION);
+  const [, registerMutation] = useMutation(REGISTER_MUTATION);
 
-  useEffect(() => {
-    const listener = () => {
-      setOnline(window.navigator.onLine);
-    };
-    window.addEventListener('online', listener);
-    window.addEventListener('offline', listener);
-
-    return () => {
-      window.removeEventListener('online', listener);
-      window.removeEventListener('offline', listener);
-    };
-  }, []);
-
-  const onSaveFastSignup = useCallback(async (values: FastSignupCheckingValues) => {
-    try {
-      const fastSignupResponse = await fastSignupMutation({
-        variables: { cpf: values.cpf, email: values.email },
-      });
-
-      await registerMutation({
-        variables: {
+  const onSaveFastSignup = useCallback(
+    async (values: FastSignupCheckingValues) => {
+      try {
+        const fastSignupResponse = await fastSignupMutation({
+          cpf: values.cpf,
+          email: values.email,
+        });
+        await registerMutation({
           eventId: values.eventId,
           userId: fastSignupResponse.data!.fastSignup.id,
-        },
-      });
-      await checkinMutation({
-        variables: {
+        });
+        await checkinMutation({
           eventId: values.eventId,
           userId: fastSignupResponse.data!.fastSignup.id,
-        },
-      });
-      message.success('User successfully created and checked in!');
-      inscriptionsQuery.refetch();
-      setFastSignupVisible(false);
-    } catch (error) {
-      console.log(error);
-      message.error('Oops, error!');
-    }
-  }, []);
-
-  useEffect(() => {
-    runInscriptionsQuery({ variables: { eventId } });
-  }, [eventId]);
+        });
+        message.success('User successfully created and checked in!');
+        refectInscriptionsQuery();
+        setFastSignupVisible(false);
+      } catch (error) {
+        console.log(error);
+        message.error('Oops, error!');
+      }
+    },
+    [checkinMutation, fastSignupMutation, registerMutation, refectInscriptionsQuery]
+  );
 
   const checkin = useCallback(
     async (inscription: Inscription) => {
       try {
         await checkinMutation({
-          variables: { eventId: inscription.event.id, userId: inscription.user.id },
+          eventId: inscription.event.id,
+          userId: inscription.user.id,
         });
-        inscriptionsQuery.refetch();
+        refectInscriptionsQuery();
         message.success('User successfully checked in!');
       } catch {
         message.error('Oops, error!');
       }
     },
-    [checkinMutation, eventId]
+    [checkinMutation, refectInscriptionsQuery]
   );
 
   return (
@@ -152,7 +139,7 @@ export function CheckIn() {
             style={{ width: '100%' }}
             placeholder="Select an event"
             optionFilterProp="children"
-            loading={eventsQuery.loading}
+            loading={eventsQuery.fetching}
             onChange={setEventId}
             allowClear
             clearIcon
@@ -182,9 +169,12 @@ export function CheckIn() {
         </div>
 
         <Table<Inscription>
-          loading={inscriptionsQuery.loading}
+          loading={inscriptionsQuery.fetching}
           dataSource={inscriptionsQuery.data?.inscriptions}
           rowKey={item => item.id}
+          locale={{
+            emptyText: eventId ? 'No inscriptions for this event' : 'Select an event',
+          }}
         >
           <Table.Column<Inscription>
             title="Event"

@@ -5,7 +5,7 @@ import {
   useContext,
   useState,
 } from 'react';
-import { useMutation, useApolloClient, gql } from '@apollo/client';
+import { gql, useClient, useMutation } from 'urql';
 import { ExtractNodeTypes } from '../types';
 import { setJwt } from '../jwt';
 
@@ -22,46 +22,26 @@ const SIGNIN_MUTATION = gql(/* GraphQL */ `
   }
 `);
 
-const SIGNUP_MUTATION = gql(/* GraphQL */ `
-  mutation signup($cpf: String!, $email: String!, $name: String!, $password: String!) {
-    signup(cpf: $cpf, email: $email, name: $name, password: $password) {
-      token
-      user {
-        name
-      }
-    }
-  }
-`);
-
 type SigninMutationTypes = ExtractNodeTypes<typeof SIGNIN_MUTATION>;
 type SigninResponse = SigninMutationTypes[0]['signin'];
 type SigninRequest = SigninMutationTypes[1];
 
-type SignupMutationTypes = ExtractNodeTypes<typeof SIGNUP_MUTATION>;
-type SignupResponse = SignupMutationTypes[0]['signup'];
-type SignupRequest = SignupMutationTypes[1];
-
-type Auth = Pick<SigninResponse, keyof (SigninResponse | SignupResponse)>;
+type Auth = SigninResponse;
 
 type AuthContextData = {
   auth: Auth | null;
   signin(signinRequest: SigninRequest): Promise<void>;
-  signup(signupRequest: SignupRequest): Promise<void>;
   signout(): Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextData>({
   auth: null,
   async signin() {},
-  async signup() {},
   async signout() {},
 });
 
 function AuthProvider({ children }: PropsWithChildren<unknown>) {
-  const apolloClient = useApolloClient();
-
-  const [signinMutation] = useMutation(SIGNIN_MUTATION);
-  const [signupMutation] = useMutation(SIGNUP_MUTATION);
+  const [, signinMutation] = useMutation(SIGNIN_MUTATION);
 
   const [auth, setAuth] = useState<Auth | null>(() => {
     // TODO: Get auth from api
@@ -74,9 +54,9 @@ function AuthProvider({ children }: PropsWithChildren<unknown>) {
 
   const signin = useCallback(
     async (signinRequest: SigninRequest) => {
-      const result = await signinMutation({ variables: signinRequest });
-      if (result.errors) {
-        throw result.errors[0];
+      const result = await signinMutation(signinRequest);
+      if (result.error) {
+        throw result.error;
       }
       const auth = result.data?.signin;
       if (!auth) {
@@ -89,31 +69,13 @@ function AuthProvider({ children }: PropsWithChildren<unknown>) {
     [signinMutation]
   );
 
-  const signup = useCallback(
-    async (signupRequest: SignupRequest) => {
-      const result = await signupMutation({ variables: signupRequest });
-      if (result.errors) {
-        throw result.errors[0];
-      }
-      const auth = result.data?.signup;
-      if (!auth) {
-        throw new Error('Error authenticating');
-      }
-      setAuth(auth);
-      setJwt(auth.token);
-      localStorage.setItem(LOCAL_STORAGE_AUTH_KEY, JSON.stringify(auth));
-    },
-    [signupMutation]
-  );
-
   const signout = useCallback(async () => {
-    apolloClient.clearStore();
     setAuth(null);
     localStorage.removeItem(LOCAL_STORAGE_AUTH_KEY);
-  }, [apolloClient]);
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ auth, signin, signup, signout }}>
+    <AuthContext.Provider value={{ auth, signin, signout }}>
       {children}
     </AuthContext.Provider>
   );

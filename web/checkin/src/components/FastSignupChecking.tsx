@@ -1,7 +1,7 @@
 import { CalendarOutlined, IdcardOutlined, MailOutlined } from '@ant-design/icons';
-import { gql, useQuery } from '@apollo/client';
 import { Form, Input, Modal, Select } from 'antd';
 import { useState } from 'react';
+import { gql, useQuery } from 'urql';
 
 const { Option } = Select;
 
@@ -34,9 +34,7 @@ export function FastSignupChecking({
   onCancel,
 }: FastSignupCheckingProps) {
   const [loading, setLoading] = useState(false);
-  const eventsQuery = useQuery(EVENTS_QUERY);
-
-  eventsQuery.data;
+  const [eventsQuery] = useQuery({ query: EVENTS_QUERY });
 
   const [form] = Form.useForm();
   return (
@@ -75,7 +73,7 @@ export function FastSignupChecking({
           <Select<string>
             showSearch
             optionFilterProp="children"
-            loading={eventsQuery.loading}
+            loading={eventsQuery.fetching}
             allowClear
             clearIcon
           >
