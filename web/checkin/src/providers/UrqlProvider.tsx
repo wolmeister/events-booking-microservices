@@ -47,7 +47,7 @@ export const UrqlProvider: React.FC = ({ children }) => {
       // Create client
       const client = createClient({
         url: GRAPHQL_URL,
-        requestPolicy: 'network-only',
+        requestPolicy: 'cache-and-network',
         fetchOptions: () => {
           const token = getJwt();
           return {
