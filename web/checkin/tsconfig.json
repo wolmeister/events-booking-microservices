@@ -8,7 +8,8 @@
     "esModuleInterop": false,
     "strict": true,
     "allowJs": false,
-    "skipLibCheck": false,
+    // Error in augmentation of the urql library (codegen)
+    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
