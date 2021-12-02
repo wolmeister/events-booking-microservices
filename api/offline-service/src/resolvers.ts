@@ -4,7 +4,7 @@ import { inscriptionGrpcClient } from './grpc/inscription-grpc-client';
 
 export const resolvers: Resolvers = {
   Mutation: {
-    signupAndCheckIn: async (parent, data, context) => {
+    signupAndCheckin: async (parent, data, context) => {
       // @TODO: Handle errors
       const user = await userGrpcClient.fastSignup({
         email: data.email,

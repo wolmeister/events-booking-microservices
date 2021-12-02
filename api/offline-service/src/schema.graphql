@@ -3,5 +3,5 @@ extend type Inscription @key(fields: "id") {
 }
 
 type Mutation {
-  signupAndCheckIn(email: String!, cpf: String!, eventId: ID!): Inscription!
+  signupAndCheckin(email: String!, cpf: String!, eventId: ID!): Inscription!
 }
