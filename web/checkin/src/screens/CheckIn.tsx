@@ -1,11 +1,12 @@
 import { Button, Card, Form, Select, Table, Tag, message, Space } from 'antd';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import {
   FastSignupChecking,
   FastSignupCheckingValues,
 } from '../components/FastSignupChecking';
 import { useNetwork } from '../hooks/useNetwork';
+import { usePersistentArray } from '../hooks/usePersistentArray';
 import { ExtractNodeTypes } from '../types';
 
 const { Option } = Select;
@@ -64,13 +65,36 @@ type InscriptionsQueryTypes = ExtractNodeTypes<typeof INSCRIPTIONS_QUERY>;
 type InscriptionsQueryResponse = InscriptionsQueryTypes[0]['inscriptions'];
 type Inscription = InscriptionsQueryResponse[0];
 
+type OfflineSignupCheckinData = FastSignupCheckingValues & {
+  inscription: Inscription;
+};
+
+const OFFLINE_CHECKINS_KEY = 'offlineCheckins';
+const OFFLINE_SIGNUPS_KEY = 'offlineSignups';
+
 export function CheckIn() {
   const { online } = useNetwork();
   const [eventId, setEventId] = useState('');
   const [fastSignupVisible, setFastSignupVisible] = useState(false);
 
+  // Data to be saved to the local stoage for offline support
+  const [offlineCheckins, setOfflineCheckins] = useState<string[]>(() => {
+    const item = localStorage.getItem(OFFLINE_CHECKINS_KEY);
+    if (item) {
+      return JSON.parse(item);
+    }
+    return [];
+  });
+  const [offlineSignups, setOfflineSignups] = useState<OfflineSignupCheckinData[]>(() => {
+    const item = localStorage.getItem(OFFLINE_SIGNUPS_KEY);
+    if (item) {
+      return JSON.parse(item);
+    }
+    return [];
+  });
+
   const [eventsQuery] = useQuery({ query: EVENTS_QUERY });
-  const [inscriptionsQuery, refectInscriptionsQuery] = useQuery({
+  const [inscriptionsQuery, refetchInscriptionsQuery] = useQuery({
     query: INSCRIPTIONS_QUERY,
     pause: !eventId,
     variables: { eventId },
@@ -78,39 +102,123 @@ export function CheckIn() {
   const [, checkinMutation] = useMutation(CHECKIN_MUTATION);
   const [, signupAndCheckinMutation] = useMutation(SIGNUP_AND_CHECKIN_MUTATION);
 
+  const inscriptionsTableData = useMemo(() => {
+    if (inscriptionsQuery.fetching) {
+      return [];
+    }
+
+    const offlineInscriptions = offlineSignups
+      .filter(data => data.eventId === eventId)
+      .map(data => data.inscription);
+
+    return [...offlineInscriptions, ...(inscriptionsQuery.data?.inscriptions || [])];
+  }, [inscriptionsQuery, offlineSignups, eventId]);
+
   const onSaveFastSignup = useCallback(
     async (values: FastSignupCheckingValues) => {
       try {
-        await signupAndCheckinMutation({
-          eventId: values.eventId,
-          cpf: values.cpf,
-          email: values.email,
-        });
+        if (online) {
+          await signupAndCheckinMutation({
+            eventId: values.eventId,
+            cpf: values.cpf,
+            email: values.email,
+          });
+          refetchInscriptionsQuery();
+        } else {
+          const offlineData: OfflineSignupCheckinData = {
+            ...values,
+            inscription: {
+              event: eventsQuery.data?.events.find(event => event.id === values.eventId)!,
+              id: values.email + values.cpf,
+              user: {
+                id: values.email + values.cpf,
+                name: values.email.split('@')[0],
+                email: values.email,
+                cpf: values.cpf,
+              },
+              checkintAt: new Date().toISOString(),
+            },
+          };
+
+          setOfflineSignups(state => [...state, offlineData]);
+        }
         message.success('User successfully created and checked in!');
-        refectInscriptionsQuery();
         setFastSignupVisible(false);
       } catch (error) {
         console.log(error);
         message.error('Oops, error!');
       }
     },
-    [signupAndCheckinMutation, refectInscriptionsQuery]
+    [signupAndCheckinMutation, refetchInscriptionsQuery, online]
   );
 
   const checkin = useCallback(
     async (inscription: Inscription) => {
       try {
-        await checkinMutation({
-          id: inscription.id,
-        });
-        refectInscriptionsQuery();
+        if (online) {
+          await checkinMutation({
+            id: inscription.id,
+          });
+          refetchInscriptionsQuery();
+        } else {
+          setOfflineCheckins(state => [...state, inscription.id]);
+        }
+
         message.success('User successfully checked in!');
       } catch {
         message.error('Oops, error!');
       }
     },
-    [checkinMutation, refectInscriptionsQuery]
+    [checkinMutation, refetchInscriptionsQuery, online]
   );
+
+  useEffect(() => {
+    if (!online) {
+      return;
+    }
+
+    const sync = async () => {
+      // Sync checkins
+      await Promise.all(
+        offlineCheckins.map(id =>
+          checkinMutation({
+            id,
+          })
+        )
+      );
+
+      // Sync signuos
+      await Promise.all(
+        offlineSignups.map(data =>
+          signupAndCheckinMutation({
+            cpf: data.cpf,
+            email: data.email,
+            eventId: data.eventId,
+          })
+        )
+      );
+
+      // Clear client data
+      if (offlineCheckins.length) {
+        setOfflineCheckins([]);
+      }
+      if (offlineSignups.length) {
+        setOfflineSignups([]);
+      }
+
+      refetchInscriptionsQuery();
+    };
+
+    sync();
+  }, [online]);
+
+  // Save offline data to local storage
+  useEffect(() => {
+    localStorage.setItem(OFFLINE_CHECKINS_KEY, JSON.stringify(offlineCheckins));
+  }, [offlineCheckins]);
+  useEffect(() => {
+    localStorage.setItem(OFFLINE_SIGNUPS_KEY, JSON.stringify(offlineSignups));
+  }, [offlineSignups]);
 
   return (
     <>
@@ -153,7 +261,7 @@ export function CheckIn() {
 
         <Table<Inscription>
           loading={inscriptionsQuery.fetching}
-          dataSource={inscriptionsQuery.data?.inscriptions}
+          dataSource={inscriptionsTableData}
           rowKey={item => item.id}
           locale={{
             emptyText: eventId ? 'No inscriptions for this event' : 'Select an event',
@@ -190,6 +298,13 @@ export function CheckIn() {
             align="center"
             sorter
             render={(_, inscription) => {
+              if (
+                offlineCheckins.includes(inscription.id) ||
+                offlineSignups.some(data => data.inscription.id === inscription.id)
+              ) {
+                return <Tag color="yellow">Checked in</Tag>;
+              }
+
               return (
                 <Tag color={inscription.checkintAt ? 'green' : 'red'}>
                   {inscription.checkintAt ? 'Checked in' : 'Not checked in'}
@@ -205,7 +320,9 @@ export function CheckIn() {
             render={(_, inscription) => (
               <Button
                 type="link"
-                disabled={inscription.checkintAt}
+                disabled={
+                  inscription.checkintAt || offlineCheckins.includes(inscription.id)
+                }
                 onClick={() => checkin(inscription)}
               >
                 Checkin

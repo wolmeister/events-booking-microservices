@@ -1,5 +1,5 @@
 import React from 'react';
-import { createClient, dedupExchange, fetchExchange, Provider } from 'urql';
+import { createClient, dedupExchange, fetchExchange, gql, Provider } from 'urql';
 import { offlineExchange } from '@urql/exchange-graphcache';
 import { makeDefaultStorage } from '@urql/exchange-graphcache/default-storage';
 import { IntrospectionData } from '@urql/exchange-graphcache/dist/types/ast';
@@ -20,12 +20,6 @@ const storage = makeDefaultStorage({
 const cache = offlineExchange({
   schema: graphqlSchema as IntrospectionData,
   storage,
-  updates: {
-    /* ... */
-  },
-  optimistic: {
-    /* ... */
-  },
 });
 
 // Create client
