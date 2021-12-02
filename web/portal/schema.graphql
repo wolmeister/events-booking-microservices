@@ -42,8 +42,8 @@ type Inscription {
 }
 
 type Mutation {
-  cancel(eventId: String!): ID!
-  checkIn(eventId: String!, userId: String!): Inscription!
+  cancel(eventId: ID!): ID!
+  checkin(id: ID!): Inscription!
   createEvent(
     cancelUntil: DateTime!
     certificateTemplate: String
@@ -53,12 +53,11 @@ type Mutation {
     name: String!
     totalSlots: Int!
   ): Event!
-  fastSignup(cpf: String!, email: String!): User!
-  generateCertificate(eventId: String!): Certificate
-  register(eventId: String!, userId: String): Inscription!
+  generateCertificate(eventId: ID!): Certificate
+  register(eventId: ID!): Inscription!
   signin(email: String!, password: String!): AuthPayload!
   signup(cpf: String!, email: String!, name: String!, password: String!): AuthPayload!
-  signupAndCheckIn(cpf: String!, email: String!, eventId: ID!): Inscription!
+  signupAndCheckin(cpf: String!, email: String!, eventId: ID!): Inscription!
 }
 
 type Query {

@@ -41,24 +41,16 @@ const INSCRIPTIONS_QUERY = gql(/* GraphQL */ `
 `);
 
 const CHECKIN_MUTATION = gql(/* GraphQL */ `
-  mutation checkin($eventId: String!, $userId: String!) {
-    checkIn(eventId: $eventId, userId: $userId) {
+  mutation checkin($id: ID!) {
+    checkin(id: $id) {
       id
     }
   }
 `);
 
-const FAST_SIGNUP_MUTATION = gql(/* GraphQL */ `
-  mutation fastSignup2($cpf: String!, $email: String!) {
-    fastSignup(cpf: $cpf, email: $email) {
-      id
-    }
-  }
-`);
-
-const REGISTER_MUTATION = gql(/* GraphQL */ `
-  mutation register($eventId: String!, $userId: String) {
-    register(eventId: $eventId, userId: $userId) {
+const SIGNUP_AND_CHECKIN_MUTATION = gql(/* GraphQL */ `
+  mutation signupAndCheckin($cpf: String!, $email: String!, $eventId: ID!) {
+    signupAndCheckin(cpf: $cpf, email: $email, eventId: $eventId) {
       id
     }
   }
@@ -84,23 +76,15 @@ export function CheckIn() {
     variables: { eventId },
   });
   const [, checkinMutation] = useMutation(CHECKIN_MUTATION);
-  const [, fastSignupMutation] = useMutation(FAST_SIGNUP_MUTATION);
-  const [, registerMutation] = useMutation(REGISTER_MUTATION);
+  const [, signupAndCheckinMutation] = useMutation(SIGNUP_AND_CHECKIN_MUTATION);
 
   const onSaveFastSignup = useCallback(
     async (values: FastSignupCheckingValues) => {
       try {
-        const fastSignupResponse = await fastSignupMutation({
+        await signupAndCheckinMutation({
+          eventId: values.eventId,
           cpf: values.cpf,
           email: values.email,
-        });
-        await registerMutation({
-          eventId: values.eventId,
-          userId: fastSignupResponse.data!.fastSignup.id,
-        });
-        await checkinMutation({
-          eventId: values.eventId,
-          userId: fastSignupResponse.data!.fastSignup.id,
         });
         message.success('User successfully created and checked in!');
         refectInscriptionsQuery();
@@ -110,15 +94,14 @@ export function CheckIn() {
         message.error('Oops, error!');
       }
     },
-    [checkinMutation, fastSignupMutation, registerMutation, refectInscriptionsQuery]
+    [signupAndCheckinMutation, refectInscriptionsQuery]
   );
 
   const checkin = useCallback(
     async (inscription: Inscription) => {
       try {
         await checkinMutation({
-          eventId: inscription.event.id,
-          userId: inscription.user.id,
+          id: inscription.id,
         });
         refectInscriptionsQuery();
         message.success('User successfully checked in!');

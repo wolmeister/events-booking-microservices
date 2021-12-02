@@ -15,7 +15,7 @@ const EVENTS_QUERY = gql(/* GraphQL */ `
 `);
 
 const INSCRIPTION_MUTATION = gql(/* GraphQL */ `
-  mutation register($eventId: String!) {
+  mutation register($eventId: ID!) {
     register(eventId: $eventId) {
       id
     }

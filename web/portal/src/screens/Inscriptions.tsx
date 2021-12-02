@@ -22,7 +22,7 @@ const INSCRIPTIONS_QUERY = gql(/* GraphQL */ `
 `);
 
 const GEMERATE_CERTIFICATE_MUTATION = gql(/* GraphQL */ `
-  mutation generateCertificate($eventId: String!) {
+  mutation generateCertificate($eventId: ID!) {
     generateCertificate(eventId: $eventId) {
       code
       url
@@ -31,7 +31,7 @@ const GEMERATE_CERTIFICATE_MUTATION = gql(/* GraphQL */ `
 `);
 
 const CAMCEL_MUTATION = gql(/* GraphQL */ `
-  mutation cancel($eventId: String!) {
+  mutation cancel($eventId: ID!) {
     cancel(eventId: $eventId)
   }
 `);
