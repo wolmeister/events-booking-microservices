@@ -20,6 +20,9 @@ specifiers:
   urql: ^2.0.5
   vite: ^2.6.4
   vite-plugin-pwa: ^0.11.9
+  workbox-core: ^6.4.1
+  workbox-precaching: ^6.4.1
+  workbox-routing: ^6.4.1
   workbox-window: ^6.4.1
 
 dependencies:
@@ -44,6 +47,9 @@ devDependencies:
   typescript: 4.5.2
   vite: 2.6.14
   vite-plugin-pwa: 0.11.9_vite@2.6.14
+  workbox-core: 6.4.1
+  workbox-precaching: 6.4.1
+  workbox-routing: 6.4.1
   workbox-window: 6.4.1
 
 packages:

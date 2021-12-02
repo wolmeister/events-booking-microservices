@@ -7,10 +7,12 @@ import { ProtectedRoute } from './routes/ProtectedRoute';
 import { SignIn } from './screens/SignIn';
 import { CheckIn } from './screens/CheckIn';
 import { AppLayout } from './layouts/AppLayout';
+import { ReloadPrompt } from './components/ReloadPrompt';
 
 export function App() {
   return (
     <AuthProvider>
+      <ReloadPrompt />
       <Routes>
         <Route
           path="/"

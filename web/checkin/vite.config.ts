@@ -7,6 +7,12 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      srcDir: 'src',
+      filename: 'register-service-worker.ts',
+      strategies: 'injectManifest',
+      workbox: {
+        cleanupOutdatedCaches: true,
+      },
       includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
         name: 'Events Booking Checkin',
