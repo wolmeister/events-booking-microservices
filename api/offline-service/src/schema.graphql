@@ -1,0 +1,7 @@
+extend type Inscription @key(fields: "id") {
+  id: ID! @external
+}
+
+type Mutation {
+  signupAndCheckIn(email: String!, cpf: String!, eventId: ID!): Inscription!
+}

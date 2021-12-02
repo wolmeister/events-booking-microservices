@@ -1,0 +1,37 @@
+{
+  "name": "@events-booking/offline-service",
+  "author": "Victor Wolmeister",
+  "version": "1.0.0",
+  "license": "MIT",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rimraf dist && tsc && copyfiles --up 1 src/*.graphql dist/",
+    "dev": "ts-node-dev --respawn --transpile-only --clear -r dotenv/config src/index.ts",
+    "gen": "graphql-codegen",
+    "gen-grpc": "proto-loader-gen-types --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=src/__generated__/proto/ src/grpc/*.proto"
+  },
+  "dependencies": {
+    "@apollo/federation": "^0.33.3",
+    "@grpc/grpc-js": "^1.4.4",
+    "@grpc/proto-loader": "^0.6.6",
+    "apollo-graphql": "^0.9.5",
+    "apollo-server": "^3.4.0",
+    "graphql": "^15.7.2",
+    "graphql-middleware": "^6.1.12",
+    "graphql-scalars": "^1.13.1",
+    "graphql-shield": "^7.5.0"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^2.2.2",
+    "@graphql-codegen/typescript": "^2.3.0",
+    "@graphql-codegen/typescript-resolvers": "^2.4.0",
+    "@types/node": "^16.11.6",
+    "copyfiles": "^2.4.1",
+    "dotenv": "^10.0.0",
+    "rimraf": "^3.0.2",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.4.4"
+  }
+}

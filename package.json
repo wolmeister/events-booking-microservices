@@ -7,6 +7,7 @@
     "event-service": "pnpm --filter @events-booking/event-service",
     "gateway-service": "pnpm --filter @events-booking/gateway-service",
     "inscription-service": "pnpm --filter @events-booking/inscription-service",
+    "offline-service": "pnpm --filter @events-booking/offline-service",
     "report-service": "pnpm --filter @events-booking/report-service",
     "user-service": "pnpm --filter @events-booking/user-service",
     "portal": "pnpm --filter @events-booking/portal",

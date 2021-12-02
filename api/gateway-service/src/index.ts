@@ -1,4 +1,8 @@
-import { ApolloGateway, RemoteGraphQLDataSource, ServiceEndpointDefinition } from '@apollo/gateway';
+import {
+  ApolloGateway,
+  RemoteGraphQLDataSource,
+  ServiceEndpointDefinition,
+} from '@apollo/gateway';
 import { ApolloServer } from 'apollo-server-express';
 import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
 import express from 'express';
@@ -11,6 +15,7 @@ const serviceList: Required<ServiceEndpointDefinition>[] = [
   { name: 'user-service', url: 'http://localhost:4001' },
   { name: 'event-service', url: 'http://localhost:4002' },
   { name: 'inscription-service', url: 'http://localhost:4003' },
+  { name: 'offline-service', url: 'http://localhost:4004' },
 ];
 
 async function start() {

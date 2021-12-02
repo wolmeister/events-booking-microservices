@@ -58,6 +58,7 @@ type Mutation {
   register(eventId: String!, userId: String): Inscription!
   signin(email: String!, password: String!): AuthPayload!
   signup(cpf: String!, email: String!, name: String!, password: String!): AuthPayload!
+  signupAndCheckIn(cpf: String!, email: String!, eventId: ID!): Inscription!
 }
 
 type Query {
