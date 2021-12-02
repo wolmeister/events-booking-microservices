@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+message FastSignupRequest {
+  string email = 1;
+  string cpf = 2;
+}
+
+message FastSignupResponse {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  string cpf = 4;
+  string createdAt = 6;
+}
+
+service UserService {
+  rpc fastSignup(FastSignupRequest) returns (FastSignupResponse) {}
+}
