@@ -1,5 +1,5 @@
 import { DateTimeResolver } from 'graphql-scalars';
-import { PrismaClient, Inscription as PrismaInscription } from '@prisma/client';
+import { Inscription as PrismaInscription } from '@prisma/client';
 import { UserInputError } from 'apollo-server';
 import { Client as MinioClient } from 'minio';
 import { v4 as uuid } from 'uuid';
@@ -7,8 +7,8 @@ import { v4 as uuid } from 'uuid';
 import { Resolvers, Inscription } from '@generated/resolvers-types';
 import { eventGrpcClient } from './grpc/grpc-client';
 import { generateReport } from './drivers/report-driver';
-
-const prisma = new PrismaClient();
+import { prisma } from './prisma';
+import { checkin, register } from './controller';
 
 // TODO: add .env
 const minioClient = new MinioClient({
@@ -66,63 +66,14 @@ export const resolvers: Resolvers = {
   },
   Mutation: {
     register: async (parent, data, context) => {
-      // Check if the event exists
-      const event = await eventGrpcClient.getEvent({ id: data.eventId });
-      if (!event) {
-        throw new UserInputError('Invalid event id');
-      }
-
-      // Check if the user isn´t already registered
-      const currentInscription = await prisma.inscription.findFirst({
-        where: {
-          userId: data.userId || context.auth.userId,
-          eventId: event.id,
-        },
+      const createdInscription = await register({
+        eventId: data.eventId,
+        userId: context.auth.userId,
       });
-      if (currentInscription) {
-        throw new UserInputError('User already registered in the event');
-      }
-
-      // @TODO: Send email
-      // @TODO: Add lock
-      // @TODO: Update events slots
-
-      const createdInscription = await prisma.inscription.create({
-        data: {
-          eventId: data.eventId,
-          userId: data.userId || context.auth.userId,
-        },
-      });
-
       return mapPrismaInscription(createdInscription);
     },
-    checkIn: async (parent, data, context) => {
-      // @TODO; Only the owner should checkin
-      // Check if the user is registered in the event
-      const currentInscription = await prisma.inscription.findFirst({
-        where: {
-          userId: data.userId,
-          eventId: data.eventId,
-        },
-      });
-      if (!currentInscription) {
-        throw new UserInputError(
-          'User is not registered in the event or the event id is invalid'
-        );
-      }
-
-      // Check if the user has already checked in
-      if (currentInscription.checkintAt) {
-        throw new UserInputError('User has already checked in');
-      }
-
-      // @TODO: Add lock
-
-      const checkedInInscription = await prisma.inscription.update({
-        where: { id: currentInscription.id },
-        data: { checkintAt: new Date() },
-      });
-
+    checkin: async (parent, data, context) => {
+      const checkedInInscription = await checkin(data);
       return mapPrismaInscription(checkedInInscription);
     },
     generateCertificate: async (parent, data, context) => {

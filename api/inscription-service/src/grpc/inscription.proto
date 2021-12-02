@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+message RegisterRequest {
+  string eventId = 1;
+  string userId = 2;
+}
+
+message RegisterResponse {
+  string id = 1;
+  string userId = 2;
+  string eventId = 3;
+  string certificateCode = 4;
+  string checkintAt = 5;
+  string createdAt = 6;
+}
+
+message CheckinRequest {
+  string id = 1;
+}
+
+message CheckinResponse {
+  string id = 1;
+  string userId = 2;
+  string eventId = 3;
+  string certificateCode = 4;
+  string checkintAt = 5;
+  string createdAt = 6;
+}
+
+service InscriptionService {
+  rpc register(RegisterRequest) returns (RegisterResponse) {}
+  rpc checkin(CheckinRequest) returns (CheckinResponse) {}
+}
