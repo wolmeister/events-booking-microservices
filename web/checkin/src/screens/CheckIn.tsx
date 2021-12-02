@@ -6,7 +6,6 @@ import {
   FastSignupCheckingValues,
 } from '../components/FastSignupChecking';
 import { useNetwork } from '../hooks/useNetwork';
-import { usePersistentArray } from '../hooks/usePersistentArray';
 import { ExtractNodeTypes } from '../types';
 
 const { Option } = Select;
@@ -199,14 +198,20 @@ export function CheckIn() {
       );
 
       // Clear client data
+      let shouldRefetch = false;
+
       if (offlineCheckins.length) {
         setOfflineCheckins([]);
+        shouldRefetch = true;
       }
       if (offlineSignups.length) {
         setOfflineSignups([]);
+        shouldRefetch = true;
       }
 
-      refetchInscriptionsQuery();
+      if (shouldRefetch) {
+        refetchInscriptionsQuery();
+      }
     };
 
     sync();
