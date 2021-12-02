@@ -1,12 +1,26 @@
-import { UserInputError } from 'apollo-server';
-
-import { Resolvers, Inscription } from '@generated/resolvers-types';
-// import { eventGrpcClient } from './grpc/grpc-client';
+import { Resolvers } from '@generated/resolvers-types';
+import { userGrpcClient } from './grpc/user-grpc-client';
+import { inscriptionGrpcClient } from './grpc/inscription-grpc-client';
 
 export const resolvers: Resolvers = {
   Mutation: {
     signupAndCheckIn: async (parent, data, context) => {
-      throw new UserInputError('Not implemnented yet');
+      // @TODO: Handle errors
+      const user = await userGrpcClient.fastSignup({
+        email: data.email,
+        cpf: data.cpf,
+      });
+      const inscription = await inscriptionGrpcClient.register({
+        userId: user.id,
+        eventId: data.eventId,
+      });
+      const checkedInInscription = await inscriptionGrpcClient.checkin({
+        id: inscription.id,
+      });
+
+      return {
+        id: checkedInInscription.id,
+      };
     },
   },
 };
